@@ -1,3 +1,4 @@
+#1_Евклидово расстояние
 import math
 
 def euclidean_distance(point1, point2):
@@ -35,3 +36,67 @@ test_point = (8, 2, 18)
 k = 3
 prediction = k_nearest_neighbors(k, train_data, test_point)
 print("Прогноз для тестовой точки:", prediction)
+
+
+
+#2_Многомерная логическая регрессия
+import numpy as np
+#Задайем веса для каждого признака
+weights = np.array([-3.82398, -0.02990, -0.09089, -0.19558, 0.02999, 0.74572])
+#Определяеям функцию для расчета логистической функции
+def sigmoid(x):
+  return 1 / (1 + np.exp(-x))
+#Определяем функцию для прогнозирования класса
+def predict(features, weights, threshold=0.5):
+# Вычислим линейную комбинацию признаков и весов
+  linear_combination = np.dot(features, weights)
+# Применим логистическую функцию к линейной комбинации
+  probabilities = sigmoid(linear_combination)
+# Прогнозируем класс на основе порога
+  predictions = np.where(probabilities >= threshold, 'да', 'нет')
+  return predictions
+#Задаем экземпляры запроса
+query_instances = np.array([
+[48, 1.21, 1, 0, 161.19, 0],
+[37, 0.72, 0, 1, 170.65, 0]
+])
+#Прогнозируем класс для каждого экземпляра запроса
+predictions = predict(query_instances, weights)
+#Вывод прогноза
+for i, prediction in enumerate(predictions):
+  print(f"Прогноз для экземпляра {i+1}: {prediction}")
+
+
+
+#3_Теорема Байеса_вероятность событий_функция плотности нормального распределния
+import pandas as pd
+#Создадим DataFrame с данными
+data = pd.DataFrame({
+'a1': ['T', 'T', 'T', 'F', 'F', 'F', 'F', 'T', 'F'],
+'a2': ['T', 'T', 'F', 'F', 'T', 'T', 'F', 'F', 'T'],
+'a3': [5.0, 7.0, 8.0, 3.0, 7.0, 4.0, 5.0, 6.0, 1.0],
+'class': ['Y', 'Y', 'N', 'Y', 'N', 'N', 'N', 'Y', 'N']
+})
+#Разделим данные на классы Y и N
+data_Y = data[data['class'] == 'Y']
+data_N = data[data['class'] == 'N']
+#Оценим априорные вероятности классов P(Y) и P(N)
+P_Y = len(data_Y) / len(data)
+P_N = len(data_N) / len(data)
+#Оценим вероятности признаков P(T|Y), P(F|Y), P(T|N), P(F|N)
+P_T_Y = len(data_Y[data_Y['a1'] == 'T']) / len(data_Y)
+P_F_Y = len(data_Y[data_Y['a1'] == 'F']) / len(data_Y)
+P_T_N = len(data_N[data_N['a1'] == 'T']) / len(data_N)
+P_F_N = len(data_N[data_N['a1'] == 'F']) / len(data_N)
+#Оценим вероятность признака a3 равного 1.0 для класса Y и N
+P_1_Y = len(data_Y[data_Y['a3'] == 1.0]) / len(data_Y)
+P_1_N = len(data_N[data_N['a3'] == 1.0]) / len(data_N)
+#Вычислим вероятность принадлежности точки (T, F, 1.0) к классу Y и N
+P_TF1_Y = P_T_Y * P_F_Y * P_1_Y * P_Y
+P_TF1_N = P_T_N * P_F_N * P_1_N * P_N
+#Определяем класс точки (T, F, 1.0) на основе вероятностей
+if P_TF1_Y > P_TF1_N:
+  point_class = 'Y'
+else:
+  point_class = 'N'
+print(f"Класс точки (T, F, 1.0): {point_class}")
