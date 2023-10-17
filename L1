@@ -1,0 +1,37 @@
+import math
+
+def euclidean_distance(point1, point2):
+    distance = math.sqrt(sum([(a - b) ** 2 for a, b in zip(point1, point2)]))
+    return distance
+
+def k_nearest_neighbors(k, train_data, test_point):
+    distances = []
+    for train_point in train_data:
+        distance = euclidean_distance(train_point[:-1], test_point[:-1])
+        distances.append((distance, train_point[-1]))
+    distances.sort()
+    neighbors = distances[:k]
+    counts = {}
+    for neighbor in neighbors:
+        label = neighbor[1]
+        if label in counts:
+            counts[label] += 1
+        else:
+            counts[label] = 1
+    prediction = max(counts, key=counts.get)
+    return prediction
+
+train_data = [
+    (6, 15, 5, 'да'),
+    (1, 6, 9, 'нет'),
+    (7, 10, 4, 'да'),
+    (7, 12, 3, 'да'),
+    (2, 2, 10, 'нет'),
+    (10, 2, 20, 'нет')
+]
+
+test_point = (8, 2, 18)
+
+k = 3
+prediction = k_nearest_neighbors(k, train_data, test_point)
+print("Прогноз для тестовой точки:", prediction)
